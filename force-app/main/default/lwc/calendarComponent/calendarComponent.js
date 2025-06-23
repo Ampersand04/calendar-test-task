@@ -12,6 +12,7 @@ export default class CalendarComponent extends LightningElement {
   @track activePopupDate = null;
   @track eventTitle = "";
   @track eventDescription = "";
+  @track eventParticipants = "";
   @track eventTime = "";
   @track eventDate = "";
   @track editDate = "";
@@ -273,6 +274,7 @@ export default class CalendarComponent extends LightningElement {
       .filter(
         (event) =>
           event.title.toLowerCase().includes(searchLower) ||
+          // event.participants.toLowerCase().includes(searchLower) ||
           event.description.toLowerCase().includes(searchLower)
       )
       .map((event) => ({
@@ -315,6 +317,9 @@ export default class CalendarComponent extends LightningElement {
     return this.events.filter(
       (event) =>
         event.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        // event.participants
+        //   .toLowerCase()
+        //   .includes(this.searchTerm.toLowerCase()) ||
         event.description.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
   }
@@ -577,6 +582,10 @@ export default class CalendarComponent extends LightningElement {
     this.eventDescription = event.target.value;
   }
 
+  handleEventParticipantsChange(event) {
+    this.eventParticipants = event.target.value;
+  }
+
   handleEventTimeChange(event) {
     this.eventTime = event.target.value;
   }
@@ -594,6 +603,7 @@ export default class CalendarComponent extends LightningElement {
       id: this.editingEventId || Date.now().toString(),
       title: this.eventTitle,
       description: this.eventDescription,
+      participants: this.eventParticipants,
       time: this.eventTime,
       date: this.eventDate // Use the actual selected/input date
     };
@@ -624,6 +634,7 @@ export default class CalendarComponent extends LightningElement {
       this.selectedDate = new Date(eventToEdit.date + "T00:00:00");
       this.activePopupDate = eventToEdit.date;
       this.eventTitle = eventToEdit.title;
+      this.eventParticipants = eventToEdit.participants;
       this.eventDescription = eventToEdit.description;
       this.eventTime = eventToEdit.time;
       this.eventDate = eventToEdit.date;
@@ -652,6 +663,7 @@ export default class CalendarComponent extends LightningElement {
 
   resetEventForm() {
     this.eventTitle = "";
+    this.eventParticipants = "";
     this.eventDescription = "";
     this.eventTime = "";
     this.eventDate = this.activePopupDate || "";
@@ -694,10 +706,10 @@ export default class CalendarComponent extends LightningElement {
     return this.editingEventId ? "Update Event" : "Save Event";
   }
 
-  get isDateDisabled() {
-    // Disable date input when editing from a specific day click
-    return this.activePopupDate && !this.editingEventId;
-  }
+  // get isDateDisabled() {
+  //   // Disable date input when editing from a specific day click
+  //   return this.activePopupDate && !this.editingEventId;
+  // }
 
   get selectedDateFormatted() {
     if (!this.selectedDate) return "";
@@ -713,7 +725,7 @@ export default class CalendarComponent extends LightningElement {
     let classes = "calendar-day";
     classes += dayObj.isCurrentMonth ? " current-month" : " other-month";
     if (dayObj.isSelected) classes += " selected";
-    if (dayObj.isToday) classes += " today";
+    // if (dayObj.isToday) classes += " today";
     if (dayObj.hasEvents) classes += " hasEvents";
     return classes;
   }

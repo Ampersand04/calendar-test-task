@@ -100,7 +100,7 @@
                       <div class="event-time"><p>{event.time}</p></div>
                     </template>
                     <div class="event-info">
-                      <p>{event.title}</p>
+                      <h3>{event.title}</h3>
                       <p>{event.description}</p>
                     </div>
                   </span>
@@ -196,7 +196,6 @@
               value={eventDate}
               onchange={handleEventDateChange}
               placeholder="Day, month, year"
-              disabled={isDateDisabled}
               required
             />
             <input
