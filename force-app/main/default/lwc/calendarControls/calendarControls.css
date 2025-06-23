@@ -1,0 +1,9 @@
+.controls {
+  background: #f3f6f9;
+  border-bottom: 1px solid #d8dde6;
+  padding: 0.5rem 1rem;
+}
+.controls h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}

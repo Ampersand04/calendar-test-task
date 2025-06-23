@@ -1,0 +1,24 @@
+<template>
+  <div class={cssClass} data-date={dayData.date}>
+    <template if:true={dayData}>
+      <template if:true={dayData.other}>
+        <div class="other-day">{dayData.dayOfMonth}</div>
+      </template>
+
+      <template if:false={dayData.other}>
+        <div class="day-header">
+          <template if:true={dayData.weekday}>
+            <span class="weekday">{dayData.weekday}, </span>
+          </template>
+          <span class="date-number">{dayData.dayOfMonth}</span>
+        </div>
+
+        <template if:true={dayData.events}>
+          <template for:each={dayData.events} for:item="ev">
+            <div key={ev.id} class="event-block">{ev.title}</div>
+          </template>
+        </template>
+      </template>
+    </template>
+  </div>
+</template>

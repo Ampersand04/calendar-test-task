@@ -1,0 +1,176 @@
+<!-- calendarComponent.html -->
+<template>
+  <div class="calendar-container fullscreen-calendar">
+    <!-- Calendar Header -->
+    <div class="calendar-header">
+      <div class="header-left">
+        <button class="nav-button" onclick={handlePreviousMonth}>
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+          </svg>
+        </button>
+        <h2 class="month-year">{currentMonthYear}</h2>
+        <button class="nav-button" onclick={handleNextMonth}>
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+          </svg>
+        </button>
+        <button class="today-btn" onclick={handleGoToToday}>Today</button>
+      </div>
+
+      <div class="header-right">
+        <template if:true={showSearch}>
+          <div class="search-container">
+            <input
+              type="text"
+              class="search-input"
+              value={searchTerm}
+              onchange={handleSearchChange}
+              placeholder="Search events..."
+            />
+          </div>
+        </template>
+
+        <button class="icon-btn search-btn" onclick={handleToggleSearch}>
+          <svg class="icon" viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+      <!-- Calendar Days -->
+      <template for:each={calendarDays} for:item="dayObj">
+        <div
+          key={dayObj.date}
+          class={dayObj.calendarDayClass}
+          data-date={dayObj.date}
+          onclick={handleDateClick}
+        >
+          <div class={dayObj.dayNumberClass}>{dayObj.day}</div>
+
+          <!-- Events for this day -->
+          <template if:true={dayObj.hasEvents}>
+            <div class="events-container">
+              <template for:each={dayObj.events} for:item="event">
+                <div key={event.id} class="event-item">
+                  <span class="event-title">
+                    <template if:true={event.time}>
+                      <div class="event-time"><p>{event.time}</p></div>
+                    </template>
+                    <div class="event-info">
+                      <p>{event.title}</p>
+                      <p>{event.description}</p>
+                    </div>
+                  </span>
+                  <div class="event-actions">
+                    <button
+                      class="event-action-btn edit-btn"
+                      data-event-id={event.id}
+                      onclick={handleEditEvent}
+                      title="Edit event"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      class="event-action-btn delete-btn"
+                      data-event-id={event.id}
+                      onclick={handleDeleteEvent}
+                      title="Delete event"
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+    </div>
+
+    <!-- Event Popup -->
+    <template if:true={showEventPopup}>
+      <div
+        class={popupArrowClass}
+        style={popupStyle}
+        onclick={handlePopupContentClick}
+      >
+        <div class="popup-arrow"></div>
+        <div class="popup-header">
+          <h4>{popupTitle}</h4>
+          <button class="close-btn" onclick={handleClosePopup} title="Close">
+            ×
+          </button>
+        </div>
+
+        <div class="popup-body">
+          <div class="form-row">
+            <input
+              type="text"
+              class="popup-input"
+              value={eventTitle}
+              onchange={handleEventTitleChange}
+              placeholder="Event Name"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <input
+              type="date"
+              class="popup-input"
+              value={eventDate}
+              onchange={handleEventDateChange}
+              placeholder="Day, month, year"
+              disabled
+              required
+            />
+            <input
+              type="time"
+              class="popup-input"
+              value={eventTime}
+              onchange={handleEventTimeChange}
+              placeholder="Hour, minute"
+              list="time-options"
+              step="00:15:00"
+              required
+            />
+          </div>
+
+          <div class="form-row">
+            <input type="text" class="popup-input" placeholder="Participants" />
+          </div>
+
+          <div class="form-row">
+            <textarea
+              class="popup-textarea"
+              value={eventDescription}
+              onchange={handleEventDescriptionChange}
+              placeholder="Description"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <div class="popup-actions">
+            <button class="btn-delete" onclick={handleClosePopup}>
+              Delete Event
+            </button>
+            <button class="btn-save" onclick={handleSaveEvent}>
+              Add Event
+            </button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Backdrop for mobile -->
+    <template if:true={showEventPopup}>
+      <div class="popup-backdrop" onclick={handleClosePopup}></div>
+    </template>
+  </div>
+</template>

@@ -1,0 +1,39 @@
+<template>
+  <section class="popup">
+    <h3>Add Event ({date})</h3>
+    <lightning-input
+      label="Title"
+      data-field="title"
+      onchange={handleChange}
+    ></lightning-input>
+    <lightning-input
+      label="Date/Time"
+      type="datetime-local"
+      data-field="dateTime"
+      value={defaultDateTime}
+      onchange={handleChange}
+    ></lightning-input>
+    <lightning-input
+      label="Participants"
+      data-field="participants"
+      onchange={handleChange}
+    ></lightning-input>
+    <lightning-textarea
+      label="Description"
+      data-field="description"
+      onchange={handleChange}
+    ></lightning-textarea>
+    <div class="actions">
+      <lightning-button
+        label="Cancel"
+        variant="neutral"
+        onclick={cancel}
+      ></lightning-button>
+      <lightning-button
+        label="Save"
+        variant="brand"
+        onclick={save}
+      ></lightning-button>
+    </div>
+  </section>
+</template>
