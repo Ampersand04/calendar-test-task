@@ -1,7 +1,5 @@
-<!-- calendarComponent.html -->
 <template>
   <div class="calendar-container fullscreen-calendar">
-    <!-- Calendar Header -->
     <div class="calendar-header">
       <div class="header-left">
         <button class="nav-button" onclick={handlePreviousMonth}>
@@ -19,7 +17,6 @@
       </div>
 
       <div class="header-right">
-        <!-- Edit Button -->
         <button class="header-btn edit-btn" onclick={handleEditClick}>
           <svg class="btn-icon" viewBox="0 0 24 24">
             <path
@@ -29,7 +26,6 @@
           Edit
         </button>
 
-        <!-- Add Event Button -->
         <button class="header-btn add-btn" onclick={handleAddEventClick}>
           <svg class="btn-icon" viewBox="0 0 24 24">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
@@ -37,7 +33,6 @@
           Add event
         </button>
 
-        <!-- Search -->
         <template if:true={showSearch}>
           <div class="search-container">
             <input
@@ -78,9 +73,7 @@
       </div>
     </div>
 
-    <!-- Calendar Grid -->
     <div class="calendar-grid">
-      <!-- Calendar Days -->
       <template for:each={calendarDays} for:item="dayObj">
         <div
           key={dayObj.dateString}
@@ -90,7 +83,6 @@
         >
           <div class={dayObj.dayNumberClass}>{dayObj.day}</div>
 
-          <!-- Events for this day -->
           <template if:true={dayObj.hasEvents}>
             <div class="events-container">
               <template for:each={dayObj.events} for:item="event">
@@ -130,7 +122,6 @@
       </template>
     </div>
 
-    <!-- Edit Date Popup -->
     <template if:true={showEditPopup}>
       <div class="edit-popup" style={editPopupStyle}>
         <div class="popup-arrow"></div>
@@ -162,7 +153,6 @@
       </div>
     </template>
 
-    <!-- Event Popup -->
     <template if:true={showEventPopup}>
       <div
         class={popupArrowClass}
@@ -244,12 +234,10 @@
       </div>
     </template>
 
-    <!-- Backdrop for mobile -->
     <template if:true={showEventPopup}>
       <div class="popup-backdrop" onclick={handleClosePopup}></div>
     </template>
 
-    <!-- Edit Popup Backdrop -->
     <template if:true={showEditPopup}>
       <div class="popup-backdrop" onclick={handleCloseEditPopup}></div>
     </template>

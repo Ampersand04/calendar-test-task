@@ -1,13 +1,14 @@
+<!-- calendarGrid.html -->
 <template>
-  <div class="calendar-grid">
-    <template if:true={days}>
-      <template for:each={days} for:item="day">
-        <c-calendar-day
-          key={day.date}
-          day-data={day}
-          onclick={handleDayClick}
-        ></c-calendar-day>
-      </template>
+  <div class="calendar-grid" style={calendarGridStyle}>
+    <template for:each={calendarDays} for:item="dayObj">
+      <c-calendar-day
+        key={dayObj.dateString}
+        day-data={dayObj}
+        ondateclick={handleDateClick}
+        oneventedit={handleEventEdit}
+        oneventdelete={handleEventDelete}
+      ></c-calendar-day>
     </template>
   </div>
 </template>

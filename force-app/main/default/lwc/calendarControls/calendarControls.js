@@ -1,40 +1,94 @@
+// calendarControls.js - Navigation and action buttons
 import { LightningElement, api } from "lwc";
 
 export default class CalendarControls extends LightningElement {
-  @api currentMonth;
-  @api currentYear;
+  @api currentDate;
+  @api showSearch = false;
+  @api searchTerm = "";
+  @api searchSuggestions = [];
 
-  get monthLabel() {
-    return new Date(this.currentYear, this.currentMonth).toLocaleString(
-      "en-US",
-      {
-        month: "long",
-        year: "numeric"
-      }
-    );
+  months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
+  get currentMonthYear() {
+    return `${this.months[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
   }
 
-  handlePrev() {
-    this.dispatchEvent(new CustomEvent("prevmonth"));
-  }
-
-  handleNext() {
-    this.dispatchEvent(new CustomEvent("nextmonth"));
-  }
-
-  handleToday() {
-    this.dispatchEvent(new CustomEvent("today"));
-  }
-
-  handleSearch(event) {
+  handlePreviousMonth() {
     this.dispatchEvent(
-      new CustomEvent("search", {
-        detail: { term: event.target.value }
+      new CustomEvent("datenavigation", {
+        detail: { action: "previous" }
       })
     );
   }
 
-  handleAdd() {
+  handleNextMonth() {
+    this.dispatchEvent(
+      new CustomEvent("datenavigation", {
+        detail: { action: "next" }
+      })
+    );
+  }
+
+  handleGoToToday() {
+    this.dispatchEvent(
+      new CustomEvent("datenavigation", {
+        detail: { action: "today" }
+      })
+    );
+  }
+
+  handleEditClick() {
+    const today = new Date().toISOString().split("T")[0];
+    this.dispatchEvent(
+      new CustomEvent("editclick", {
+        detail: { date: today }
+      })
+    );
+  }
+
+  handleAddEventClick() {
     this.dispatchEvent(new CustomEvent("addeventclick"));
+  }
+
+  handleToggleSearch() {
+    this.dispatchEvent(new CustomEvent("searchtoggle"));
+  }
+
+  handleSearchChange(event) {
+    this.dispatchEvent(
+      new CustomEvent("searchchange", {
+        detail: { searchTerm: event.target.value }
+      })
+    );
+  }
+
+  handleSearchInput(event) {
+    this.dispatchEvent(
+      new CustomEvent("searchchange", {
+        detail: { searchTerm: event.target.value }
+      })
+    );
+  }
+
+  handleSuggestionClick(event) {
+    const eventId = event.currentTarget.dataset.eventId;
+    this.dispatchEvent(
+      new CustomEvent("searchsuggestionselect", {
+        detail: { eventId }
+      })
+    );
   }
 }
