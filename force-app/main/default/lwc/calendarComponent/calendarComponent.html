@@ -101,7 +101,7 @@
                     </template>
                     <div class="event-info">
                       <h3>{event.title}</h3>
-                      <p>{event.description}</p>
+                      <p>{event.participants}</p>
                     </div>
                   </span>
                   <div class="event-actions">
@@ -135,7 +135,7 @@
       <div class="edit-popup" style={editPopupStyle}>
         <div class="popup-arrow"></div>
         <div class="popup-header">
-          <h4></h4>
+          <h4>Edit event</h4>
           <button
             class="close-btn"
             onclick={handleCloseEditPopup}
@@ -211,7 +211,13 @@
           </div>
 
           <div class="form-row">
-            <input type="text" class="popup-input" placeholder="Participants" />
+            <input
+              class="popup-input"
+              value={eventParticipants}
+              onchange={handleEventParticipantsChange}
+              type="text"
+              placeholder="Participants"
+            />
           </div>
 
           <div class="form-row">
