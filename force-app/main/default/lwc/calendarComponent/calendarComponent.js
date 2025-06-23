@@ -77,13 +77,99 @@ export default class CalendarComponent extends LightningElement {
   calculateCenterPopupPosition() {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft =
+      window.pageXOffset || document.documentElement.scrollLeft;
+
     const popupWidth = 320;
     const popupHeight = 400;
+    const margin = 20;
 
-    const top = (viewportHeight - popupHeight) / 2 + window.pageYOffset;
-    const left = (viewportWidth - popupWidth) / 2;
+    // Always center the popup when opened from header
+    let top = viewportHeight / 2 - popupHeight / 2 + scrollTop;
+    let left = viewportWidth / 2 - popupWidth / 2 + scrollLeft;
+
+    // Ensure popup stays within viewport bounds
+    if (top < scrollTop + margin) {
+      top = scrollTop + margin;
+    }
+    if (top + popupHeight > scrollTop + viewportHeight - margin) {
+      top = scrollTop + viewportHeight - popupHeight - margin;
+    }
+    if (left < scrollLeft + margin) {
+      left = scrollLeft + margin;
+    }
+    if (left + popupWidth > scrollLeft + viewportWidth - margin) {
+      left = scrollLeft + viewportWidth - popupWidth - margin;
+    }
 
     this.popupPosition = { top, left, arrowPosition: "none" };
+  }
+
+  // Updated calculateEditPopupPosition for header edit button
+  calculateEditPopupPosition() {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const scrollLeft =
+      window.pageXOffset || document.documentElement.scrollLeft;
+
+    const popupWidth = 280;
+    const popupHeight = 200; // Edit popup is smaller
+    const margin = 20;
+
+    // Try to position below the edit button
+    const editButton = this.template.querySelector(".edit-btn");
+    let top, left;
+
+    if (editButton && viewportWidth > 768) {
+      const rect = editButton.getBoundingClientRect();
+
+      // Position below the button
+      top = rect.bottom + scrollTop + 10;
+      left = rect.left + scrollLeft + (rect.width - popupWidth) / 2;
+
+      // Check if popup goes off right edge
+      if (left + popupWidth > viewportWidth - margin) {
+        left = viewportWidth - popupWidth - margin + scrollLeft;
+      }
+
+      // Check if popup goes off left edge
+      if (left < scrollLeft + margin) {
+        left = scrollLeft + margin;
+      }
+
+      // Check if popup goes off bottom edge
+      if (top + popupHeight > scrollTop + viewportHeight - margin) {
+        // Position above the button instead
+        top = rect.top + scrollTop - popupHeight - 10;
+
+        // If still off screen, center vertically
+        if (top < scrollTop + margin) {
+          top = viewportHeight / 2 - popupHeight / 2 + scrollTop;
+        }
+      }
+    } else {
+      // Fallback to center positioning for mobile or if button not found
+      top = viewportHeight / 2 - popupHeight / 2 + scrollTop;
+      left = viewportWidth / 2 - popupWidth / 2 + scrollLeft;
+    }
+
+    // Final boundary checks
+    if (top < scrollTop + margin) {
+      top = scrollTop + margin;
+    }
+    if (top + popupHeight > scrollTop + viewportHeight - margin) {
+      top = scrollTop + viewportHeight - popupHeight - margin;
+    }
+    if (left < scrollLeft + margin) {
+      left = scrollLeft + margin;
+    }
+    if (left + popupWidth > scrollLeft + viewportWidth - margin) {
+      left = scrollLeft + viewportWidth - popupWidth - margin;
+    }
+
+    this.editPopupPosition = { top, left };
   }
 
   // Calculate edit popup position
@@ -401,57 +487,72 @@ export default class CalendarComponent extends LightningElement {
     const scrollLeft =
       window.pageXOffset || document.documentElement.scrollLeft;
 
-    // Get viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-
-    // Popup dimensions (approximate)
     const popupWidth = 320;
     const popupHeight = 400;
+    const margin = 70;
 
-    // Get day info for positioning
-    const dateString = targetElement.dataset.date;
-    const dayData = this.calendarDays.find(
-      (day) => day.dateString === dateString
-    );
+    let top, left, arrowPosition;
 
-    let top = rect.top + scrollTop;
-    let left = rect.right + scrollLeft + 10; // Position to the right with 10px gap
-    let arrowPosition = "left"; // Arrow points from left side of popup
+    // Мобильная версия: всегда центрируем без стрелки
+    if (viewportWidth <= 768) {
+      top = viewportHeight / 2 - popupHeight / 2 + scrollTop;
+      left = viewportWidth / 2 - popupWidth / 2 + scrollLeft;
+      arrowPosition = "none";
 
-    if (dayData) {
-      const { weekIndex, dayIndex } = dayData;
-
-      // Special case for Sunday (last day of week) - position to the left
-      if (dayIndex === 6) {
-        // Sunday in Monday-start calendar
-        left = rect.left + scrollLeft - popupWidth - 10;
-        arrowPosition = "right";
+      // Удерживаем попап в пределах экрана
+      if (top < scrollTop + margin) top = scrollTop + margin;
+      if (top + popupHeight > scrollTop + viewportHeight - margin) {
+        top = scrollTop + viewportHeight - popupHeight - margin;
       }
-
-      // If popup goes off right edge, position to the left
-      if (left + popupWidth > viewportWidth - 20) {
-        left = rect.left + scrollLeft - popupWidth - 10;
-        arrowPosition = "right";
+      if (left < scrollLeft + margin) left = scrollLeft + margin;
+      if (left + popupWidth > scrollLeft + viewportWidth - margin) {
+        left = scrollLeft + viewportWidth - popupWidth - margin;
       }
+    } else {
+      // Десктоп: пытаемся вывести справа или слева от ячейки
+      const rightPos = rect.right + scrollLeft + 10;
+      const leftPos = rect.left + scrollLeft - popupWidth - 10;
 
-      // If popup goes off left edge, position to the right
-      if (left < 20) {
-        left = rect.right + scrollLeft + 10;
+      const canPlaceRight =
+        rightPos + popupWidth <= scrollLeft + viewportWidth - margin;
+      const canPlaceLeft = leftPos >= scrollLeft + margin;
+
+      if (canPlaceRight) {
+        left = rightPos;
         arrowPosition = "left";
+      } else if (canPlaceLeft) {
+        left = leftPos;
+        arrowPosition = "right";
+      } else {
+        // Ни там, ни там не помещается целиком – выбираем сторону с большим свободным пространством
+        const spaceRight =
+          scrollLeft + viewportWidth - margin - (rightPos + popupWidth);
+        const spaceLeft = leftPos - (scrollLeft + margin);
+
+        if (spaceRight >= spaceLeft) {
+          left = rightPos;
+          arrowPosition = "left";
+        } else {
+          left = leftPos;
+          arrowPosition = "right";
+        }
       }
 
-      // Vertical centering relative to the day cell
+      // Вертикальное центрирование относительно ячейки
       top = rect.top + scrollTop + rect.height / 2 - popupHeight / 2;
-
-      // Ensure popup doesn't go off top edge
-      if (top < scrollTop + 20) {
-        top = scrollTop + 20;
+      if (top < scrollTop + margin) top = scrollTop + margin;
+      if (top + popupHeight > scrollTop + viewportHeight - margin) {
+        top = scrollTop + viewportHeight - popupHeight - margin;
       }
 
-      // Ensure popup doesn't go off bottom edge
-      if (top + popupHeight > scrollTop + viewportHeight - 20) {
-        top = scrollTop + viewportHeight - popupHeight - 20;
+      // Финальные проверки по горизонтали
+      if (left < scrollLeft + margin) {
+        left = scrollLeft + margin;
+      }
+      if (left + popupWidth > scrollLeft + viewportWidth - margin) {
+        left = scrollLeft + viewportWidth - popupWidth - margin;
       }
     }
 
@@ -619,7 +720,6 @@ export default class CalendarComponent extends LightningElement {
 
   getDayNumberClass(dayObj) {
     if (dayObj.isToday) return "day-number today";
-    if (dayObj.isSelected) return "day-number selected";
     return "day-number";
   }
 

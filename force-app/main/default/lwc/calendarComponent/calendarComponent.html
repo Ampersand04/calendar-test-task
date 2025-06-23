@@ -19,6 +19,25 @@
       </div>
 
       <div class="header-right">
+        <!-- Edit Button -->
+        <button class="header-btn edit-btn" onclick={handleEditClick}>
+          <svg class="btn-icon" viewBox="0 0 24 24">
+            <path
+              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+            />
+          </svg>
+          Edit
+        </button>
+
+        <!-- Add Event Button -->
+        <button class="header-btn add-btn" onclick={handleAddEventClick}>
+          <svg class="btn-icon" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+          </svg>
+          Add event
+        </button>
+
+        <!-- Search -->
         <template if:true={showSearch}>
           <div class="search-container">
             <input
@@ -26,8 +45,26 @@
               class="search-input"
               value={searchTerm}
               onchange={handleSearchChange}
+              oninput={handleSearchInput}
               placeholder="Search events..."
             />
+            <template if:true={searchSuggestions.length}>
+              <div class="search-suggestions">
+                <template for:each={searchSuggestions} for:item="suggestion">
+                  <div
+                    key={suggestion.id}
+                    class="search-suggestion"
+                    onclick={handleSuggestionClick}
+                    data-event-id={suggestion.id}
+                  >
+                    <div class="suggestion-title">{suggestion.title}</div>
+                    <div class="suggestion-date">
+                      {suggestion.formattedDate}
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
           </div>
         </template>
 
@@ -46,9 +83,9 @@
       <!-- Calendar Days -->
       <template for:each={calendarDays} for:item="dayObj">
         <div
-          key={dayObj.date}
+          key={dayObj.dateString}
           class={dayObj.calendarDayClass}
-          data-date={dayObj.date}
+          data-date={dayObj.dateString}
           onclick={handleDateClick}
         >
           <div class={dayObj.dayNumberClass}>{dayObj.day}</div>
@@ -93,6 +130,38 @@
       </template>
     </div>
 
+    <!-- Edit Date Popup -->
+    <template if:true={showEditPopup}>
+      <div class="edit-popup" style={editPopupStyle}>
+        <div class="popup-arrow"></div>
+        <div class="popup-header">
+          <h4></h4>
+          <button
+            class="close-btn"
+            onclick={handleCloseEditPopup}
+            title="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div class="popup-body">
+          <div class="form-row">
+            <input
+              type="date"
+              class="popup-input"
+              value={editDate}
+              onchange={handleEditDateChange}
+              placeholder="Select date"
+              required
+            />
+          </div>
+          <div class="popup-actions">
+            <button class="btn-save" onclick={handleSubmitEdit}>Submit</button>
+          </div>
+        </div>
+      </div>
+    </template>
+
     <!-- Event Popup -->
     <template if:true={showEventPopup}>
       <div
@@ -127,7 +196,7 @@
               value={eventDate}
               onchange={handleEventDateChange}
               placeholder="Day, month, year"
-              disabled
+              disabled={isDateDisabled}
               required
             />
             <input
@@ -157,11 +226,13 @@
           </div>
 
           <div class="popup-actions">
-            <button class="btn-delete" onclick={handleClosePopup}>
-              Delete Event
-            </button>
+            <template if:true={editingEventId}>
+              <button class="btn-delete" onclick={handleDeleteCurrentEvent}>
+                Delete Event
+              </button>
+            </template>
             <button class="btn-save" onclick={handleSaveEvent}>
-              Add Event
+              {saveButtonText}
             </button>
           </div>
         </div>
@@ -171,6 +242,11 @@
     <!-- Backdrop for mobile -->
     <template if:true={showEventPopup}>
       <div class="popup-backdrop" onclick={handleClosePopup}></div>
+    </template>
+
+    <!-- Edit Popup Backdrop -->
+    <template if:true={showEditPopup}>
+      <div class="popup-backdrop" onclick={handleCloseEditPopup}></div>
     </template>
   </div>
 </template>
