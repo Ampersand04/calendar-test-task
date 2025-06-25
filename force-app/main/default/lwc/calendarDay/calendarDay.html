@@ -1,24 +1,46 @@
+<!-- calendarDay.html -->
 <template>
-  <div class={cssClass} data-date={dayData.date}>
-    <template if:true={dayData}>
-      <template if:true={dayData.other}>
-        <div class="other-day">{dayData.dayOfMonth}</div>
-      </template>
+  <div
+    class={calendarDayClass}
+    data-date={dayData.dateString}
+    onclick={handleDateClick}
+  >
+    <div class={dayNumberClass}>{dayData.day}</div>
 
-      <template if:false={dayData.other}>
-        <div class="day-header">
-          <template if:true={dayData.weekday}>
-            <span class="weekday">{dayData.weekday}, </span>
-          </template>
-          <span class="date-number">{dayData.dayOfMonth}</span>
-        </div>
-
-        <template if:true={dayData.events}>
-          <template for:each={dayData.events} for:item="ev">
-            <div key={ev.id} class="event-block">{ev.title}</div>
-          </template>
+    <template if:true={dayData.hasEvents}>
+      <div class="events-container">
+        <template for:each={dayData.events} for:item="event">
+          <div key={event.id} class="event-item">
+            <span class="event-title">
+              <template if:true={event.time}>
+                <div class="event-time"><p>{event.time}</p></div>
+              </template>
+              <div class="event-info">
+                <h3>{event.title}</h3>
+                <p>{event.participants}</p>
+              </div>
+            </span>
+            <div class="event-actions">
+              <button
+                class="event-action-btn edit-btn"
+                data-event-id={event.id}
+                onclick={handleEditEvent}
+                title="Edit event"
+              >
+                ✏️
+              </button>
+              <button
+                class="event-action-btn delete-btn"
+                data-event-id={event.id}
+                onclick={handleDeleteEvent}
+                title="Delete event"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
         </template>
-      </template>
+      </div>
     </template>
   </div>
 </template>
