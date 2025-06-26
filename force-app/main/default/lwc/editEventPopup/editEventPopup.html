@@ -1,47 +1,109 @@
 <template>
-  <section class="popup">
-    <h3>Edit Event</h3>
-    <lightning-input
-      label="Title"
-      value={eventData.title}
-      data-field="title"
-      onchange={handleChange}
-    ></lightning-input>
-    <lightning-input
-      label="Date/Time"
-      type="datetime-local"
-      value={eventData.dateTime}
-      data-field="dateTime"
-      onchange={handleChange}
-    ></lightning-input>
-    <lightning-input
-      label="Participants"
-      value={eventData.participants}
-      data-field="participants"
-      onchange={handleChange}
-    ></lightning-input>
-    <lightning-textarea
-      label="Description"
-      value={eventData.description}
-      data-field="description"
-      onchange={handleChange}
-    ></lightning-textarea>
-    <div class="actions">
-      <lightning-button
-        label="Delete"
-        variant="destructive"
-        onclick={handleDelete}
-      ></lightning-button>
-      <lightning-button
-        label="Cancel"
-        variant="neutral"
-        onclick={handleCancel}
-      ></lightning-button>
-      <lightning-button
-        label="Update"
-        variant="brand"
-        onclick={handleUpdate}
-      ></lightning-button>
+  <template if:true={show}>
+    <!-- Backdrop -->
+    <div class="popup-backdrop" onclick={handleBackdropClick}></div>
+
+    <!-- Popup -->
+    <div
+      class="event-popup"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="popup-title"
+    >
+      <!-- Arrow (will be hidden on mobile) -->
+      <div class="popup-arrow"></div>
+
+      <!-- Header -->
+      <div class="popup-header">
+        <h4 id="popup-title">Edit Events</h4>
+        <button
+          class="close-btn"
+          onclick={handleClose}
+          aria-label="Close popup"
+        >
+          ×
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="popup-body">
+        <!-- Date Selection -->
+        <div class="form-row">
+          <label for="date-input" class="form-label">Select Date:</label>
+          <input
+            id="date-input"
+            type="date"
+            class="popup-input"
+            value={selectedDate}
+            onchange={handleDateChange}
+          />
+        </div>
+
+        <!-- Events List -->
+        <template if:true={showEventsList}>
+          <div class="events-section">
+            <template if:true={hasEvents}>
+              <h5 class="events-title">Events on this date:</h5>
+              <div class="events-list">
+                <template for:each={events} for:item="event">
+                  <div key={event.id} class="event-item">
+                    <div class="event-content">
+                      <div class="event-header">
+                        <span class="event-title">{event.title}</span>
+                        <template if:true={event.time}>
+                          <span class="event-time">{event.time}</span>
+                        </template>
+                      </div>
+                      <template if:true={event.description}>
+                        <div class="event-description">{event.description}</div>
+                      </template>
+                      <template if:true={event.participants}>
+                        <div class="event-participants">
+                          <strong>Participants:</strong> {event.participants}
+                        </div>
+                      </template>
+                    </div>
+                    <div class="event-actions">
+                      <button
+                        class="btn-edit-event"
+                        data-event-id={event.id}
+                        onclick={handleEditEvent}
+                        title="Edit event"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        class="btn-delete-event"
+                        data-event-id={event.id}
+                        onclick={handleDeleteEvent}
+                        title="Delete event"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </template>
+
+            <template if:false={hasEvents}>
+              <div class="no-events">
+                <p>No events found for this date.</p>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- Actions -->
+        <div class="popup-actions">
+          <template if:true={selectedDate}>
+            <button class="btn-save" onclick={handleAddEvent}>
+              Add New Event
+            </button>
+          </template>
+          <button class="btn-cancel" onclick={handleClose}>Close</button>
+        </div>
+      </div>
     </div>
-  </section>
+  </template>
 </template>
