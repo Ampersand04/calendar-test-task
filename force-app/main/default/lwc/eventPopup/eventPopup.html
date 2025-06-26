@@ -1,0 +1,95 @@
+<template>
+  <template if:true={show}>
+    <div
+      class={popupArrowClass}
+      style={popupStyle}
+      onclick={handlePopupContentClick}
+    >
+      <div class="popup-arrow"></div>
+      <div class="popup-header">
+        <h4>{popupTitle}</h4>
+        <button class="close-btn" onclick={handleClose} title="Close">×</button>
+      </div>
+
+      <div class="popup-body">
+        <div class="form-row">
+          <input
+            type="text"
+            class="popup-input"
+            data-field="title"
+            value={formData.title}
+            onchange={handleInputChange}
+            onfocus={handleInputFocus}
+            onclick={handleInputClick}
+            placeholder="Event Name"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <input
+            type="date"
+            class="popup-input"
+            data-field="date"
+            value={formData.date}
+            onchange={handleInputChange}
+            onfocus={handleInputFocus}
+            onclick={handleInputClick}
+            placeholder="Day, month, year"
+            required
+          />
+          <input
+            type="time"
+            class="popup-input"
+            data-field="time"
+            value={formData.time}
+            onchange={handleInputChange}
+            onfocus={handleInputFocus}
+            onclick={handleInputClick}
+            placeholder="Hour, minute"
+            step="00:15:00"
+          />
+        </div>
+
+        <div class="form-row">
+          <input
+            class="popup-input"
+            data-field="participants"
+            value={formData.participants}
+            onchange={handleInputChange}
+            onfocus={handleInputFocus}
+            onclick={handleInputClick}
+            type="text"
+            placeholder="Participants"
+          />
+        </div>
+
+        <div class="form-row">
+          <textarea
+            class="popup-textarea"
+            data-field="description"
+            value={formData.description}
+            onchange={handleInputChange}
+            onfocus={handleInputFocus}
+            onclick={handleInputClick}
+            placeholder="Description"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="popup-actions">
+          <template if:true={isEditing}>
+            <button class="btn-delete" onclick={handleDelete}>
+              Delete Event
+            </button>
+          </template>
+          <button class="btn-save" onclick={handleSave}>
+            {saveButtonText}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="popup-backdrop" onclick={handleClose}></div>
+  </template>
+</template>

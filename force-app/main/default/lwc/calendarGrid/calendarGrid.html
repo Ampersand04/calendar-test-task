@@ -1,14 +1,52 @@
-<!-- calendarGrid.html -->
 <template>
   <div class="calendar-grid" style={calendarGridStyle}>
     <template for:each={calendarDays} for:item="dayObj">
-      <c-calendar-day
+      <div
         key={dayObj.dateString}
-        day-data={dayObj}
-        ondateclick={handleDateClick}
-        oneventedit={handleEventEdit}
-        oneventdelete={handleEventDelete}
-      ></c-calendar-day>
+        class={dayObj.calendarDayClass}
+        data-date={dayObj.dateString}
+        onclick={handleDateClick}
+      >
+        <div class={dayObj.dayNumberClass}>{dayObj.day}</div>
+
+        <template if:true={dayObj.hasEvents}>
+          <div class="events-container">
+            <template for:each={dayObj.events} for:item="event">
+              <div key={event.id} class="event-item">
+                <span class="event-title">
+                  <template if:true={event.time}>
+                    <div class="event-time">
+                      <p>{event.time}</p>
+                    </div>
+                  </template>
+                  <div class="event-info">
+                    <h3>{event.title}</h3>
+                    <p>{event.participants}</p>
+                  </div>
+                </span>
+                <div class="event-actions">
+                  <button
+                    class="event-action-btn edit-btn"
+                    data-event-id={event.id}
+                    onclick={handleEditEvent}
+                    title="Edit event"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    class="event-action-btn delete-btn"
+                    data-event-id={event.id}
+                    onclick={handleDeleteEvent}
+                    title="Delete event"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
     </template>
   </div>
 </template>

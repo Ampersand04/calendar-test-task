@@ -1,11 +1,18 @@
-// calendarControls.js - Navigation and action buttons
-import { LightningElement, api } from "lwc";
+import { LightningElement, api, track } from "lwc";
 
 export default class CalendarControls extends LightningElement {
   @api currentDate;
-  @api showSearch = false;
-  @api searchTerm = "";
+  @api showEditButton = false;
+  @api showAddButton = false;
+  @api enableSearch = false;
+  @api editButtonLabel = "Edit";
+  @api addButtonLabel = "Add event";
+  @api searchPlaceholder = "Search";
   @api searchSuggestions = [];
+  @api hasCustomActions = false;
+
+  @track showSearchInput = false;
+  @track searchTerm = "";
 
   months = [
     "January",
@@ -22,73 +29,102 @@ export default class CalendarControls extends LightningElement {
     "December"
   ];
 
-  get currentMonthYear() {
-    return `${this.months[this.currentDate.getMonth()]} ${this.currentDate.getFullYear()}`;
+  get displayMonthYear() {
+    if (!this.currentDate) return "";
+    const date = new Date(this.currentDate);
+    return `${this.months[date.getMonth()]} ${date.getFullYear()}`;
   }
 
   handlePreviousMonth() {
-    this.dispatchEvent(
-      new CustomEvent("datenavigation", {
-        detail: { action: "previous" }
-      })
-    );
+    this.dispatchNavigationEvent("previousmonth");
   }
 
   handleNextMonth() {
-    this.dispatchEvent(
-      new CustomEvent("datenavigation", {
-        detail: { action: "next" }
-      })
-    );
+    this.dispatchNavigationEvent("nextmonth");
   }
 
   handleGoToToday() {
-    this.dispatchEvent(
-      new CustomEvent("datenavigation", {
-        detail: { action: "today" }
-      })
-    );
+    this.dispatchNavigationEvent("gotoday");
   }
 
   handleEditClick() {
-    const today = new Date().toISOString().split("T")[0];
-    this.dispatchEvent(
-      new CustomEvent("editclick", {
-        detail: { date: today }
-      })
-    );
+    this.dispatchCustomEvent("editclick");
   }
 
   handleAddEventClick() {
-    this.dispatchEvent(new CustomEvent("addeventclick"));
+    this.dispatchCustomEvent("addeventclick");
   }
 
   handleToggleSearch() {
-    this.dispatchEvent(new CustomEvent("searchtoggle"));
+    this.showSearchInput = !this.showSearchInput;
+    if (!this.showSearchInput) {
+      this.searchTerm = "";
+      this.dispatchSearchEvent("searchclear", "");
+    }
   }
 
   handleSearchChange(event) {
-    this.dispatchEvent(
-      new CustomEvent("searchchange", {
-        detail: { searchTerm: event.target.value }
-      })
-    );
+    this.searchTerm = event.target.value;
+    this.dispatchSearchEvent("searchchange", this.searchTerm);
   }
 
   handleSearchInput(event) {
+    this.searchTerm = event.target.value;
+    this.dispatchSearchEvent("searchinput", this.searchTerm);
+  }
+
+  handleSuggestionClick(event) {
+    const suggestionId = event.currentTarget.dataset.suggestionId;
+    const selectedSuggestion = this.searchSuggestions.find(
+      (suggestion) => suggestion.id === suggestionId
+    );
+
+    if (selectedSuggestion) {
+      this.showSearchInput = false;
+      this.searchTerm = "";
+      this.dispatchSearchEvent("suggestionselect", selectedSuggestion);
+    }
+  }
+
+  dispatchNavigationEvent(eventName) {
     this.dispatchEvent(
-      new CustomEvent("searchchange", {
-        detail: { searchTerm: event.target.value }
+      new CustomEvent(eventName, {
+        detail: {
+          currentDate: this.currentDate
+        }
       })
     );
   }
 
-  handleSuggestionClick(event) {
-    const eventId = event.currentTarget.dataset.eventId;
+  dispatchCustomEvent(eventName) {
     this.dispatchEvent(
-      new CustomEvent("searchsuggestionselect", {
-        detail: { eventId }
+      new CustomEvent(eventName, {
+        detail: {
+          currentDate: this.currentDate
+        }
       })
     );
+  }
+
+  dispatchSearchEvent(eventName, data) {
+    this.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: {
+          searchTerm: this.searchTerm,
+          data: data
+        }
+      })
+    );
+  }
+
+  @api
+  clearSearch() {
+    this.searchTerm = "";
+    this.showSearchInput = false;
+  }
+
+  @api
+  setSearchTerm(term) {
+    this.searchTerm = term;
   }
 }
