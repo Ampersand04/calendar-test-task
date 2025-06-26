@@ -1,18 +1,15 @@
-# Salesforce DX Project: Next Steps
+# Test task LWC Calendar
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## Описание структуры папки с компонентами
 
-## How Do You Plan to Deploy Your Changes?
+calendarComponent - Главный компонент
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+calendarControls - Шапка календаря (навигация по месяцам, кнопки и поиск)
 
-## Configure Your Salesforce DX Project
+calendarGrid - Компонент сетки дней месца
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+eventPopup - Всплывающее окно "дня". Появляется при нажатии на день в сетке каледаря либо по кнопке Add event, позволяет создавать, обновлять и удалять event(-ы)
 
-## Read All About It
+editEventPopup - Всплывающее окно для редактирования мероприятий дня. Работает по принцыпу поиска дня в localStorage, рендеринга списка мероприятий на этот день и последующего его изменения удаления и тп.
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+## Работу можно протестить по ссылке: https://fortegrupe6-dev-ed.develop.my.site.com/testCalendar/
