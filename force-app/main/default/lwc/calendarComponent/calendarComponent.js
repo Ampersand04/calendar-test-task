@@ -195,7 +195,22 @@ export default class CalendarComponent extends LightningElement {
     this.showEventPopup = false;
   }
 
-  handleEventPopupClose() {
+  handleEventPopupClose(event) {
+    const dateString = event?.detail?.dateString;
+    if (!dateString) return;
+
+    const clickedDate = new Date(dateString);
+    if (
+      this.selectedDate &&
+      this.selectedDate.toDateString() === clickedDate.toDateString()
+    ) {
+      this.selectedDate = null;
+      this.activePopupDate = null;
+      this.showEventPopup = false;
+      this.currentEventData = null;
+      return;
+    }
+
     this.showEventPopup = false;
   }
 
@@ -204,6 +219,18 @@ export default class CalendarComponent extends LightningElement {
     if (!dateString) return;
 
     const clickedDate = new Date(dateString + "T00:00:00");
+
+    if (
+      this.selectedDate &&
+      this.selectedDate.getTime() === clickedDate.getTime()
+    ) {
+      this.selectedDate = null;
+      this.activePopupDate = null;
+      this.showEventPopup = false;
+      this.currentEventData = null;
+      return;
+    }
+
     this.selectedDate = clickedDate;
     this.activePopupDate = dateString;
 
@@ -389,10 +416,10 @@ export default class CalendarComponent extends LightningElement {
   }
 
   updateSearchSuggestions() {
-    if (!this.searchTerm.trim()) {
-      this.searchSuggestions = [];
-      return;
-    }
+    // if (!this.searchTerm.trim()) {
+    //   this.searchSuggestions = [];
+    //   return;
+    // }
 
     const searchLower = this.searchTerm.toLowerCase();
     this.searchSuggestions = this.events
@@ -401,6 +428,7 @@ export default class CalendarComponent extends LightningElement {
           event.title.toLowerCase().includes(searchLower) ||
           event.description.toLowerCase().includes(searchLower)
       )
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
       .map((event) => ({
         ...event,
         formattedDate: new Date(event.date).toLocaleDateString("en-US", {
@@ -408,8 +436,7 @@ export default class CalendarComponent extends LightningElement {
           day: "numeric",
           year: "numeric"
         })
-      }))
-      .slice(0, 5);
+      }));
   }
 
   get filteredEvents() {

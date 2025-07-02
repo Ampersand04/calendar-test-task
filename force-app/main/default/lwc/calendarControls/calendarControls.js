@@ -4,14 +4,13 @@ export default class CalendarControls extends LightningElement {
   @api currentDate;
   @api showEditButton = false;
   @api showAddButton = false;
-  @api enableSearch = false;
   @api editButtonLabel = "Edit";
   @api addButtonLabel = "Add event";
   @api searchPlaceholder = "Search";
   @api searchSuggestions = [];
   @api hasCustomActions = false;
 
-  @track showSearchInput = false;
+  @track isFocused = false;
   @track searchTerm = "";
 
   months = [
@@ -55,11 +54,20 @@ export default class CalendarControls extends LightningElement {
     this.dispatchCustomEvent("addeventclick");
   }
 
-  handleToggleSearch() {
-    this.showSearchInput = !this.showSearchInput;
-    if (!this.showSearchInput) {
-      this.searchTerm = "";
-      this.dispatchSearchEvent("searchclear", "");
+  handleSearch() {
+    this.searchTerm = "";
+    this.dispatchSearchEvent("searchclear", "");
+  }
+
+  handleSearchFocus() {
+    if (this.isFocused === false) {
+      this.isFocused = true;
+    }
+  }
+
+  handleSearchBlur() {
+    if (this.isFocused) {
+      this.isFocused = false;
     }
   }
 
@@ -80,7 +88,7 @@ export default class CalendarControls extends LightningElement {
     );
 
     if (selectedSuggestion) {
-      this.showSearchInput = false;
+      this.isFocused = false;
       this.searchTerm = "";
       this.dispatchSearchEvent("suggestionselect", selectedSuggestion);
     }
@@ -120,7 +128,7 @@ export default class CalendarControls extends LightningElement {
   @api
   clearSearch() {
     this.searchTerm = "";
-    this.showSearchInput = false;
+    this.isFocused = false;
   }
 
   @api
