@@ -521,10 +521,12 @@ export default class CalendarComponent extends LightningElement {
         isSelected:
           this.selectedDate &&
           this.isSameDate(currentDateObj, this.selectedDate),
-        events: dayEvents.map((event) => ({
-          ...event,
-          time: event.time ? this.formatTime(event.time) : null
-        })),
+        events: dayEvents
+          .sort((a, b) => new Date(b.time) - new Date(a.time))
+          .map((event) => ({
+            ...event,
+            time: event.time ? this.formatTime(event.time) : null
+          })),
         hasEvents: dayEvents.length > 0,
         calendarDayClass: this.getCalendarDayClass({
           isCurrentMonth: currentDateObj.getMonth() === month,

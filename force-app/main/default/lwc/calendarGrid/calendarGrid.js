@@ -8,6 +8,21 @@ export default class CalendarGrid extends LightningElement {
     return `--calendar-rows: ${this.calendarWeeks};`;
   }
 
+  get calendarWeeksData() {
+    const weeks = [];
+    const daysPerWeek = 7;
+
+    for (let i = 0; i < this.calendarDays.length; i += daysPerWeek) {
+      const weekDays = this.calendarDays.slice(i, i + daysPerWeek);
+      weeks.push({
+        weekKey: `week-${Math.floor(i / daysPerWeek)}`,
+        days: weekDays
+      });
+    }
+
+    return weeks;
+  }
+
   handleDateClick(event) {
     event.stopPropagation();
 
