@@ -85,7 +85,7 @@
 .events-container {
   margin-top: 4px;
   flex: 1;
-  max-height: 280px;
+  max-height: 300px;
   height: max-content;
   overflow-y: auto;
   display: flex;
