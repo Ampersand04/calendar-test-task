@@ -13,6 +13,9 @@ export default class CalendarControls extends LightningElement {
   @track isFocused = false;
   @track searchTerm = "";
 
+  @track isSelectingSuggestion = false;
+  @track blurTimeout = null;
+
   months = [
     "January",
     "February",
@@ -56,18 +59,23 @@ export default class CalendarControls extends LightningElement {
 
   handleSearch() {
     this.searchTerm = "";
+    this.isFocused = false;
     this.dispatchSearchEvent("searchclear", "");
   }
 
   handleSearchFocus() {
-    if (this.isFocused === false) {
-      this.isFocused = true;
+    if (this.blurTimeout) {
+      clearTimeout(this.blurTimeout);
+      this.blurTimeout = null;
     }
+    this.isFocused = true;
   }
 
   handleSearchBlur() {
-    if (this.isFocused) {
-      this.isFocused = false;
+    if (!this.isSelectingSuggestion) {
+      this.blurTimeout = setTimeout(() => {
+        this.isFocused = false;
+      }, 150);
     }
   }
 
@@ -81,16 +89,73 @@ export default class CalendarControls extends LightningElement {
     this.dispatchSearchEvent("searchinput", this.searchTerm);
   }
 
+  handleSuggestionMouseEnter() {
+    this.isSelectingSuggestion = true;
+
+    if (this.blurTimeout) {
+      clearTimeout(this.blurTimeout);
+      this.blurTimeout = null;
+    }
+  }
+
+  handleSuggestionMouseLeave() {
+    this.isSelectingSuggestion = false;
+  }
+
   handleSuggestionClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.isSelectingSuggestion = true;
+
+    if (this.blurTimeout) {
+      clearTimeout(this.blurTimeout);
+      this.blurTimeout = null;
+    }
+
     const suggestionId = event.currentTarget.dataset.suggestionId;
     const selectedSuggestion = this.searchSuggestions.find(
       (suggestion) => suggestion.id === suggestionId
     );
 
     if (selectedSuggestion) {
-      this.isFocused = false;
-      this.searchTerm = "";
-      this.dispatchSearchEvent("suggestionselect", selectedSuggestion);
+      this.processSuggestionSelection(selectedSuggestion);
+    }
+  }
+
+  processSuggestionSelection(selectedSuggestion) {
+    this.searchTerm = "";
+    this.isFocused = false;
+    this.isSelectingSuggestion = false;
+
+    this.dispatchSearchEvent("suggestionselect", selectedSuggestion);
+
+    const searchInput = this.template.querySelector(".search-input");
+    if (searchInput) {
+      searchInput.value = "";
+    }
+  }
+
+  handleSearchKeyDown(event) {
+    if (event.key === "Escape") {
+      this.cancelSearch();
+    }
+  }
+
+  cancelSearch() {
+    this.searchTerm = "";
+    this.isFocused = false;
+    this.isSelectingSuggestion = false;
+
+    if (this.blurTimeout) {
+      clearTimeout(this.blurTimeout);
+      this.blurTimeout = null;
+    }
+
+    const searchInput = this.template.querySelector(".search-input");
+    if (searchInput) {
+      searchInput.value = "";
+      searchInput.blur();
     }
   }
 
@@ -127,12 +192,21 @@ export default class CalendarControls extends LightningElement {
 
   @api
   clearSearch() {
-    this.searchTerm = "";
-    this.isFocused = false;
+    this.cancelSearch();
   }
 
   @api
   setSearchTerm(term) {
     this.searchTerm = term;
+    const searchInput = this.template.querySelector(".search-input");
+    if (searchInput) {
+      searchInput.value = term;
+    }
+  }
+
+  disconnectedCallback() {
+    if (this.blurTimeout) {
+      clearTimeout(this.blurTimeout);
+    }
   }
 }

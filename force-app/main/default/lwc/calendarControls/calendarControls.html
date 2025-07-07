@@ -45,33 +45,33 @@
           onblur={handleSearchBlur}
           onchange={handleSearchChange}
           oninput={handleSearchInput}
+          onkeydown={handleSearchKeyDown}
           placeholder={searchPlaceholder} />
-        <template if:true={isFocused}> </template>
+
         <template if:true={isFocused}>
           <template if:true={searchTerm}>
             <div class="search-suggestions">
-              <template
-                if:true={searchSuggestions.length}
-                for:each={searchSuggestions}
-                for:item="suggestion">
-                <div
-                  key={suggestion.id}
-                  class="search-suggestion"
-                  onclick={handleSuggestionClick}
-                  data-suggestion-id={suggestion.id}>
-                  <div class="suggestion-title">{suggestion.title}</div>
-                  <div class="suggestion-date">{suggestion.formattedDate}</div>
-                </div>
+              <template if:true={searchSuggestions.length}>
+                <template for:each={searchSuggestions} for:item="suggestion">
+                  <div
+                    key={suggestion.id}
+                    class="search-suggestion"
+                    data-suggestion-id={suggestion.id}
+                    onclick={handleSuggestionClick}
+                    onmouseenter={handleSuggestionMouseEnter}
+                    onmouseleave={handleSuggestionMouseLeave}>
+                    <div class="suggestion-title">{suggestion.title}</div>
+                    <div class="suggestion-date">
+                      {suggestion.formattedDate}
+                    </div>
+                  </div>
+                </template>
               </template>
-              <!-- 1
-            1 -->
               <template if:false={searchSuggestions.length}>
                 <div class="no-suggestions">No results found</div>
               </template>
             </div>
-            <!--  -->
           </template>
-          <!--  -->
         </template>
       </div>
 

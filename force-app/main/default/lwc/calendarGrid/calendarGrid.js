@@ -24,6 +24,14 @@ export default class CalendarGrid extends LightningElement {
   }
 
   handleDateClick(event) {
+    if (
+      event.target.closest(".suggestions-dropdown") ||
+      event.target.closest(".search-container") ||
+      event.target.classList.contains("suggestion-item")
+    ) {
+      return;
+    }
+
     event.stopPropagation();
 
     const dateString = event.currentTarget.dataset.date;
