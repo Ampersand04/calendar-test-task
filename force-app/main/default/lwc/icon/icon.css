@@ -1,0 +1,11 @@
+.icon-wrapper {
+  display: flex;
+  padding: 5px;
+  border-radius: 32px;
+  background-color: transparent;
+}
+.icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}

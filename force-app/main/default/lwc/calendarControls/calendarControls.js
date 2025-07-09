@@ -57,12 +57,6 @@ export default class CalendarControls extends LightningElement {
     this.dispatchCustomEvent("addeventclick");
   }
 
-  handleSearch() {
-    this.searchTerm = "";
-    this.isFocused = false;
-    this.dispatchSearchEvent("searchclear", "");
-  }
-
   handleSearchFocus() {
     if (this.blurTimeout) {
       clearTimeout(this.blurTimeout);
@@ -89,13 +83,10 @@ export default class CalendarControls extends LightningElement {
     this.dispatchSearchEvent("searchinput", this.searchTerm);
   }
 
-  handleSuggestionMouseEnter() {
-    this.isSelectingSuggestion = true;
-
-    if (this.blurTimeout) {
-      clearTimeout(this.blurTimeout);
-      this.blurTimeout = null;
-    }
+  handleSearchClear() {
+    this.searchTerm = "";
+    this.isFocused = false;
+    this.dispatchSearchEvent("searchclear", "");
   }
 
   handleSuggestionMouseLeave() {
