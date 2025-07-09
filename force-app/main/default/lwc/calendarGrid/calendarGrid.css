@@ -93,6 +93,15 @@
   gap: 5px;
 }
 
+.events-container::-webkit-scrollbar {
+  width: 3px;
+  background-color: #fff;
+}
+
+.events-container::-webkit-scrollbar-thumb {
+  background-color: #2c5a41;
+}
+
 .event-item {
   position: relative;
   padding: 2px 4px;
