@@ -133,7 +133,14 @@ export default class EventPopup extends LightningElement {
 
   handleClose() {
     this.hasInitiallyFocused = false;
-    this.dispatchEvent(new CustomEvent("close"));
+
+    this.dispatchEvent(
+      new CustomEvent("close", {
+        detail: {
+          dateString: this.eventData.date
+        }
+      })
+    );
   }
 
   handlePopupContentClick(event) {

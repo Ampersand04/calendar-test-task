@@ -68,13 +68,16 @@
           <textarea
             class="popup-textarea"
             data-field="description"
-            value={formData.description}
             onchange={handleInputChange}
             onfocus={handleInputFocus}
             onclick={handleInputClick}
             placeholder="Description"
             rows="4"
-          ></textarea>
+          >
+          
+{formData.description}
+</textarea
+          >
         </div>
 
         <div class="popup-actions">

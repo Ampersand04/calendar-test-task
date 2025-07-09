@@ -1,7 +1,6 @@
-/* Base popup styles */
 .event-popup {
   position: absolute;
-  background: white;
+  background-color: white;
   border: 1px solid #ddd;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
@@ -17,7 +16,7 @@
   position: absolute;
   width: 24px;
   height: 24px;
-  background: white;
+  background-color: white;
   border: 1px solid #ddd;
   transform: rotate(315deg);
   top: 40%;
@@ -54,7 +53,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.3);
   z-index: 999;
   display: none;
 }
@@ -65,7 +64,7 @@
   align-items: center;
   padding: 16px 20px;
   border-bottom: 1px solid #eee;
-  background: #f9f9f9;
+  background-color: #f9f9f9;
   border-radius: 12px 12px 0 0;
   position: relative;
   z-index: 1;
@@ -79,7 +78,7 @@
 }
 
 .close-btn {
-  background: none;
+  background-color: none;
   border: none;
   font-size: 24px;
   cursor: pointer;
@@ -95,7 +94,7 @@
 }
 
 .close-btn:hover {
-  background: #e0e0e0;
+  background-color: #e0e0e0;
 }
 
 .popup-body {
@@ -162,50 +161,49 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease;
   white-space: nowrap;
   min-width: fit-content;
 }
 
 .btn-save {
-  background: #007bff;
+  background-color: #007bff;
   color: white;
 }
 
 .btn-save:hover {
-  background: #0056b3;
+  background-color: #0056b3;
 }
 
 .btn-cancel {
-  background: #f8f9fa;
+  background-color: #f8f9fa;
   color: #666;
   border: 1px solid #ddd;
 }
 
 .btn-cancel:hover {
-  background: #e9ecef;
+  background-color: #e9ecef;
 }
 
 .btn-delete {
-  background: #dc3545;
+  background-color: #dc3545;
   color: white;
 }
 
 .btn-delete:hover {
-  background: #c82333;
+  background-color: #c82333;
 }
 
 .btn-view-events {
-  background: #28a745;
+  background-color: #28a745;
   color: white;
   width: 100%;
 }
 
 .btn-view-events:hover {
-  background: #218838;
+  background-color: #218838;
 }
 
-/* Date display styles */
 .selected-date-display {
   font-size: 16px;
   color: #333;
@@ -213,7 +211,6 @@
   padding: 8px 0;
 }
 
-/* Events section styles */
 .events-section {
   margin-top: 20px;
   border-top: 1px solid #eee;
@@ -240,8 +237,8 @@
   padding: 12px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background: #f8f9fa;
-  transition: all 0.15s ease;
+  background-color: #f8f9fa;
+  transition: background-color 0.15s ease;
 }
 
 .event-item:hover {
@@ -270,7 +267,7 @@
 .event-time {
   font-size: 12px;
   color: #666;
-  background: #e9ecef;
+  background-color: #e9ecef;
   padding: 2px 6px;
   border-radius: 4px;
 }
@@ -295,7 +292,7 @@
 
 .btn-edit-event,
 .btn-delete-event {
-  background: none;
+  background-color: none;
   border: none;
   padding: 4px 8px;
   border-radius: 4px;
@@ -308,11 +305,11 @@
 }
 
 .btn-edit-event:hover {
-  background: #e9ecef;
+  background-color: #e9ecef;
 }
 
 .btn-delete-event:hover {
-  background: #f8d7da;
+  background-color: #f8d7da;
 }
 
 .no-events {

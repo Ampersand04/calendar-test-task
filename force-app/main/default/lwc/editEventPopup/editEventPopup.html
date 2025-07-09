@@ -1,19 +1,15 @@
 <template>
   <template if:true={show}>
-    <!-- Backdrop -->
     <div class="popup-backdrop" onclick={handleBackdropClick}></div>
 
-    <!-- Popup -->
     <div
       class="event-popup"
       role="dialog"
       aria-modal="true"
       aria-labelledby="popup-title"
     >
-      <!-- Arrow (will be hidden on mobile) -->
       <div class="popup-arrow"></div>
 
-      <!-- Header -->
       <div class="popup-header">
         <h4 id="popup-title">Edit Events</h4>
         <button
@@ -25,9 +21,7 @@
         </button>
       </div>
 
-      <!-- Body -->
       <div class="popup-body">
-        <!-- Date Selection -->
         <div class="form-row">
           <label for="date-input" class="form-label">Select Date:</label>
           <input
@@ -39,7 +33,6 @@
           />
         </div>
 
-        <!-- Events List -->
         <template if:true={showEventsList}>
           <div class="events-section">
             <template if:true={hasEvents}>
@@ -94,7 +87,6 @@
           </div>
         </template>
 
-        <!-- Actions -->
         <div class="popup-actions">
           <template if:true={selectedDate}>
             <button class="btn-save" onclick={handleAddEvent}>

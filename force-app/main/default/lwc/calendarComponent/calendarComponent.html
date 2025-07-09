@@ -18,16 +18,14 @@
       onsearchchange={handleSearchChange}
       onsearchinput={handleSearchInput}
       onsearchclear={handleSearchClear}
-      onsuggestionselect={handleSuggestionSelect}
-    ></c-calendar-controls>
+      onsuggestionselect={handleSuggestionSelect}></c-calendar-controls>
 
     <c-calendar-grid
       calendar-days={calendarDays}
       calendar-weeks={calendarWeeks}
       ondateclick={handleDateClick}
       oneditevent={handleEditEvent}
-      ondeleteevent={handleDeleteEvent}
-    ></c-calendar-grid>
+      ondeleteevent={handleDeleteEvent}></c-calendar-grid>
 
     <template if:true={showEditPopup}>
       <c-edit-event-popup
@@ -36,8 +34,7 @@
         onsubmit={handleEditPopupSubmit}
         onclose={handleEditPopupClose}
         oneditevent={handleEditPopupEditEvent}
-        ondeleteevent={handleEditPopupDeleteEvent}
-      ></c-edit-event-popup>
+        ondeleteevent={handleEditPopupDeleteEvent}></c-edit-event-popup>
     </template>
 
     <template if:true={showEventPopup}>
@@ -47,8 +44,7 @@
         event-data={currentEventData}
         onsave={handleEventPopupSave}
         ondelete={handleEventPopupDelete}
-        onclose={handleEventPopupClose}
-      ></c-event-popup>
+        onclose={handleEventPopupClose}></c-event-popup>
     </template>
   </div>
 </template>

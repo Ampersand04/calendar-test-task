@@ -1,4 +1,11 @@
 import { LightningElement, track } from "lwc";
+import {
+  formatDateForDataset,
+  formatTime,
+  isSameDate,
+  getCalendarDayClass,
+  getDayNumberClass
+} from "c/utils";
 
 export default class CalendarComponent extends LightningElement {
   @track currentDate = new Date();
@@ -195,7 +202,22 @@ export default class CalendarComponent extends LightningElement {
     this.showEventPopup = false;
   }
 
-  handleEventPopupClose() {
+  handleEventPopupClose(event) {
+    const dateString = event?.detail?.dateString;
+    if (!dateString) return;
+
+    const clickedDate = new Date(dateString);
+    if (
+      this.selectedDate &&
+      this.selectedDate.toDateString() === clickedDate.toDateString()
+    ) {
+      this.selectedDate = null;
+      this.activePopupDate = null;
+      this.showEventPopup = false;
+      this.currentEventData = null;
+      return;
+    }
+
     this.showEventPopup = false;
   }
 
@@ -204,6 +226,18 @@ export default class CalendarComponent extends LightningElement {
     if (!dateString) return;
 
     const clickedDate = new Date(dateString + "T00:00:00");
+
+    if (
+      this.selectedDate &&
+      this.selectedDate.getTime() === clickedDate.getTime()
+    ) {
+      this.selectedDate = null;
+      this.activePopupDate = null;
+      this.showEventPopup = false;
+      this.currentEventData = null;
+      return;
+    }
+
     this.selectedDate = clickedDate;
     this.activePopupDate = dateString;
 
@@ -389,11 +423,6 @@ export default class CalendarComponent extends LightningElement {
   }
 
   updateSearchSuggestions() {
-    if (!this.searchTerm.trim()) {
-      this.searchSuggestions = [];
-      return;
-    }
-
     const searchLower = this.searchTerm.toLowerCase();
     this.searchSuggestions = this.events
       .filter(
@@ -401,6 +430,7 @@ export default class CalendarComponent extends LightningElement {
           event.title.toLowerCase().includes(searchLower) ||
           event.description.toLowerCase().includes(searchLower)
       )
+      .sort((a, b) => new Date(b.date) - new Date(a.date))
       .map((event) => ({
         ...event,
         formattedDate: new Date(event.date).toLocaleDateString("en-US", {
@@ -408,17 +438,25 @@ export default class CalendarComponent extends LightningElement {
           day: "numeric",
           year: "numeric"
         })
-      }))
-      .slice(0, 5);
+      }));
   }
 
-  get filteredEvents() {
-    if (!this.searchTerm) return this.events;
-    return this.events.filter(
-      (event) =>
-        event.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+  getFilteredEventsForDate(date) {
+    const dayEvents = this.events.filter((event) =>
+      isSameDate(new Date(event.date), date)
     );
+
+    if (this.searchTerm) {
+      const searchLower = this.searchTerm.toLowerCase();
+      return dayEvents.map((event) => ({
+        ...event,
+        isHighlighted:
+          event.title.toLowerCase().includes(searchLower) ||
+          event.description.toLowerCase().includes(searchLower)
+      }));
+    }
+
+    return dayEvents;
   }
 
   saveEventsToStorage() {
@@ -472,15 +510,8 @@ export default class CalendarComponent extends LightningElement {
     const currentDateObj = new Date(startDate);
 
     for (let i = 0; i < weeksNeeded * 7; i++) {
-      const dayEvents = this.searchTerm
-        ? this.filteredEvents.filter((event) =>
-            this.isSameDate(new Date(event.date), currentDateObj)
-          )
-        : this.events.filter((event) =>
-            this.isSameDate(new Date(event.date), currentDateObj)
-          );
-
-      const dateString = this.formatDateForDataset(currentDateObj);
+      const dayEvents = this.getFilteredEventsForDate(currentDateObj);
+      const dateString = formatDateForDataset(currentDateObj);
 
       days.push({
         date: new Date(currentDateObj),
@@ -490,28 +521,27 @@ export default class CalendarComponent extends LightningElement {
             ? `${this.weekDays[currentDateObj.getDay() === 0 ? 6 : currentDateObj.getDay() - 1]}, ${currentDateObj.getDate()}`
             : currentDateObj.getDate(),
         isCurrentMonth: currentDateObj.getMonth() === month,
-        isToday: this.isSameDate(currentDateObj, new Date()),
+        isToday: isSameDate(currentDateObj, new Date()),
         isSelected:
-          this.selectedDate &&
-          this.isSameDate(currentDateObj, this.selectedDate),
-        events: dayEvents.map((event) => ({
-          ...event,
-          time: event.time ? this.formatTime(event.time) : null
-        })),
+          this.selectedDate && isSameDate(currentDateObj, this.selectedDate),
+        events: dayEvents
+          .sort((a, b) => new Date(b.time) - new Date(a.time))
+          .map((event) => ({
+            ...event,
+            time: event.time ? formatTime(event.time) : null
+          })),
         hasEvents: dayEvents.length > 0,
-        calendarDayClass: this.getCalendarDayClass({
+        calendarDayClass: getCalendarDayClass({
           isCurrentMonth: currentDateObj.getMonth() === month,
-          isToday: this.isSameDate(currentDateObj, new Date()),
+          isToday: isSameDate(currentDateObj, new Date()),
           hasEvents: dayEvents.length > 0,
           isSelected:
-            this.selectedDate &&
-            this.isSameDate(currentDateObj, this.selectedDate)
+            this.selectedDate && isSameDate(currentDateObj, this.selectedDate)
         }),
-        dayNumberClass: this.getDayNumberClass({
-          isToday: this.isSameDate(currentDateObj, new Date()),
+        dayNumberClass: getDayNumberClass({
+          isToday: isSameDate(currentDateObj, new Date()),
           isSelected:
-            this.selectedDate &&
-            this.isSameDate(currentDateObj, this.selectedDate)
+            this.selectedDate && isSameDate(currentDateObj, this.selectedDate)
         }),
         weekIndex: Math.floor(i / 7),
         dayIndex: i % 7
@@ -521,46 +551,5 @@ export default class CalendarComponent extends LightningElement {
     }
 
     return days;
-  }
-
-  formatDateForDataset(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
-
-  formatTime(timeString) {
-    if (!timeString) return null;
-    try {
-      const [hours, minutes] = timeString.split(":");
-      const hour24 = parseInt(hours);
-      const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
-      const ampm = hour24 >= 12 ? "PM" : "AM";
-      return `${hour12}:${minutes} ${ampm}`;
-    } catch (error) {
-      return timeString;
-    }
-  }
-
-  isSameDate(date1, date2) {
-    return (
-      date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getFullYear() === date2.getFullYear()
-    );
-  }
-
-  getCalendarDayClass(dayObj) {
-    let classes = "calendar-day";
-    classes += dayObj.isCurrentMonth ? " current-month" : " other-month";
-    if (dayObj.isSelected) classes += " selected";
-    if (dayObj.hasEvents) classes += " hasEvents";
-    return classes;
-  }
-
-  getDayNumberClass(dayObj) {
-    if (dayObj.isToday) return "day-number today";
-    return "day-number";
   }
 }
