@@ -423,11 +423,6 @@ export default class CalendarComponent extends LightningElement {
   }
 
   updateSearchSuggestions() {
-    // if (!this.searchTerm.trim()) {
-    //   this.searchSuggestions = [];
-    //   return;
-    // }
-
     const searchLower = this.searchTerm.toLowerCase();
     this.searchSuggestions = this.events
       .filter(
@@ -446,13 +441,22 @@ export default class CalendarComponent extends LightningElement {
       }));
   }
 
-  get filteredEvents() {
-    if (!this.searchTerm) return this.events;
-    return this.events.filter(
-      (event) =>
-        event.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        event.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+  getFilteredEventsForDate(date) {
+    const dayEvents = this.events.filter((event) =>
+      isSameDate(new Date(event.date), date)
     );
+
+    if (this.searchTerm) {
+      const searchLower = this.searchTerm.toLowerCase();
+      return dayEvents.map((event) => ({
+        ...event,
+        isHighlighted:
+          event.title.toLowerCase().includes(searchLower) ||
+          event.description.toLowerCase().includes(searchLower)
+      }));
+    }
+
+    return dayEvents;
   }
 
   saveEventsToStorage() {
@@ -506,14 +510,7 @@ export default class CalendarComponent extends LightningElement {
     const currentDateObj = new Date(startDate);
 
     for (let i = 0; i < weeksNeeded * 7; i++) {
-      const dayEvents = this.searchTerm
-        ? this.filteredEvents.filter((event) =>
-            isSameDate(new Date(event.date), currentDateObj)
-          )
-        : this.events.filter((event) =>
-            isSameDate(new Date(event.date), currentDateObj)
-          );
-
+      const dayEvents = this.getFilteredEventsForDate(currentDateObj);
       const dateString = formatDateForDataset(currentDateObj);
 
       days.push({
